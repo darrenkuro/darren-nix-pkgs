@@ -1,4 +1,4 @@
-<h1 align="center">{{PROJECT_NAME}}</h1>
+<h1 align="center">Darren Nix Pkgs</h1>
 
 <p align="center">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"/>
@@ -26,8 +26,8 @@
 ### Usage
 
 ```bash
-git clone https://github.com/darrenkuro/{{REPO_NAME}}
-cd {{REPO_NAME}}
+git clone https://github.com/darrenkuro/darren-nix-pkgs
+cd darren-nix-pkgs
 ```
 
 ### Development
