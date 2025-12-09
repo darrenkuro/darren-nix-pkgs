@@ -34,7 +34,7 @@
         let
           pkgs = import nixpkgs { inherit system; };
           naerskLib = naersk.lib.${system};
-          # helper to import a package derivation from pkgs/<name>/package.nix
+
           mk =
             name:
             import (./pkgs + "/${name}/package.nix") {
@@ -44,21 +44,16 @@
         in
         {
           packages = {
-            # expose all packages here
             git-init = mk "git-init";
             gloc = mk "gloc";
-
-            # handy default
             default = self.packages.${system}.git-init;
           };
 
-          # Overlay so consumers can do: pkgs.git-init / pkgs.gloc
           overlays.default = final: prev: {
             git-init = self.packages.${system}.git-init;
             gloc = self.packages.${system}.gloc;
           };
 
-          # Dev shell for building Rust stuff
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
               rustc
@@ -68,11 +63,11 @@
             ];
           };
 
-          # Optional: apps (nix run .#git-init)
           apps.git-init = {
             type = "app";
             program = "${self.packages.${system}.git-init}/bin/git-init";
           };
+
           apps.default = self.apps.${system}.git-init;
         };
     };
