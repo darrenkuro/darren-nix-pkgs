@@ -1,14 +1,6 @@
 {
   description = "Darren's personal nix packages";
 
-  nixConfig = {
-    # If you use Cachix, add it here so consumers auto-use your cache
-    # extra-substituters = [ "https://darren-nix-pkgs.cachix.org" ];
-    # extra-trusted-public-keys = [
-    #   "darren-nix-pkgs.cachix.org-1:REPLACE_WITH_YOUR_KEY"
-    # ];
-  };
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -34,12 +26,11 @@
         let
           pkgs = import nixpkgs { inherit system; };
           naerskLib = naersk.lib.${system};
-
           mk =
             name:
-            import (./pkgs + "/${name}/package.nix") {
+            import ./pkgs/${name}/package.nix {
               inherit pkgs naerskLib system;
-              src = ./pkgs + "/${name}";
+              src = ./pkgs/${name};
             };
         in
         {
@@ -47,11 +38,6 @@
             git-init = mk "git-init";
             gloc = mk "gloc";
             default = self.packages.${system}.git-init;
-          };
-
-          overlays.default = final: prev: {
-            git-init = self.packages.${system}.git-init;
-            gloc = self.packages.${system}.gloc;
           };
 
           devShells.default = pkgs.mkShell {
@@ -67,8 +53,13 @@
             type = "app";
             program = "${self.packages.${system}.git-init}/bin/git-init";
           };
-
           apps.default = self.apps.${system}.git-init;
         };
+
+      # 👇 move overlay to global (not perSystem)
+      flake.overlays.default = final: prev: {
+        git-init = self.packages.${final.system}.git-init;
+        gloc = self.packages.${final.system}.gloc;
+      };
     };
 }
